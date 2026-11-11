@@ -1,115 +1,119 @@
-<h1 align="center">Usage Metering for Claude Code</h1>
+# Usage Metering for Claude Code
 
-<p align="center">
-  <strong>The open-source usage metering and charge review desk that is just a database and Claude Code.</strong>
-</p>
+Own the usage records behind your customer charges. Keep accounts, additive meters, agreed rates, source exports, corrections and statement reviews in one database.
 
-<p align="center">
-  Created by <a href="https://www.enterprisedna.co"><strong>Enterprise DNA</strong></a>. Free and open source. Works with Claude Code, Codex, OpenCode or Cursor.
-</p>
+## Three ways to own it
 
-<!-- three-doors -->
-<table align="center">
-  <tr>
-    <td align="center"><strong>Do it yourself</strong><br/>Clone it, run it, own it. Free, MIT.<br/><a href="#quick-start">Quick start</a></td>
-    <td align="center"><strong>We customise it</strong><br/>Your fields, your rules, your Amberflo data brought across.<br/><a href="https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=amberflo">Book a call</a></td>
-    <td align="center"><strong>We run it for you</strong><br/>Installed, connected and operated inside Omni. Setup fee, then a retainer.<br/><a href="https://enterprisedna.co/omni/instead-of/amberflo?utm_source=github&utm_medium=readme&utm_campaign=amberflo">How it works</a></td>
-  </tr>
-</table>
+- **Do it yourself:** MIT source, local embedded database, your own hosting when needed. Use Claude Code, Codex, OpenCode or Cursor with the same command recipes.
+- **We customise it:** Enterprise DNA brings your Amberflo usage across, adds your contract rules, connects your sources and builds a screen if your team wants one. One setup fee, then a retainer for ongoing work.
+- **We run it for you:** Omni by Enterprise DNA installs and operates your version, with access, backups and ongoing changes. One setup fee, then a retainer. [Book Sam's 30-minute call](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_campaign=amberflo).
 
-<p align="center">
-  <a href="#what-is-this">What is this</a> &bull;
-  <a href="#why-no-front-end">Why no front end</a> &bull;
-  <a href="#quick-start">Quick start</a> &bull;
-  <a href="#the-commands">Commands</a> &bull;
-  <a href="#instead-of-amberflo">Instead of Amberflo</a> &bull;
-  <a href="#want-it-installed-and-run-for-you">Installed for you</a> &bull;
-  <a href="#license">License</a>
-</p>
+## Start with fictional data
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Node-20+-339933?style=flat-square" alt="Node 20+" />
-  <img src="https://img.shields.io/badge/PostgreSQL-any-336791?style=flat-square" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/PGlite-embedded-3ecf8e?style=flat-square" alt="PGlite" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="MIT License" />
-</p>
-
----
-
-## What is this
-
-Usage Metering for Claude Code does the job you pay Amberflo for, as a Postgres database and a set of agent commands. There is no web front end. You open the folder in [Claude Code](https://claude.com/claude-code) (or Codex, OpenCode, Cursor: see `AGENTS.md`) and ask for what you want in plain language. It runs the right query, and it can answer questions the Amberflo dashboard cannot.
-
-<!-- TODO(author): the annual bill. One sentence: what a 10 to 50 person business typically pays Amberflo per year, all in, with a source. -->
-
-Want the same thing with a web front end, or built on a different stack? That is a customisation, and it is exactly what Enterprise DNA does: [book a call](https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=amberflo).
-
-<!-- TODO(author): two or three sentences on what this specific product covers and who it is for. -->
-
-## Why no front end
-
-- The front end was only ever there because the database was hard to talk to. That is no longer true.
-- Your data sits in plain Postgres tables you own. Any tool can read them. No export, no lock-in.
-- No seats, no tiers, no add-ons. Read [docs/why-no-front-end.md](docs/why-no-front-end.md) for the honest trade-offs too.
-
-## Quick start
-
-Sixty seconds, no database install (an embedded Postgres runs inside Node):
+Node 20 or newer. On Windows, use npm.cmd if PowerShell blocks npm.ps1.
 
 ```bash
-git clone https://github.com/Enterprise-DNA-OS/usage-metering-for-claude-code.git
-cd usage-metering-for-claude-code
 npm install
 npm run demo
+npm run usage -- attention
+npm run view
+npm run docs
 ```
 
-Then open the folder in Claude Code and type a slash command. <!-- TODO(author): name the first command to try. -->
+The default is PGlite under `.data/db`. Run one process at a time against that embedded folder. Use PostgreSQL for concurrent operators. `DATABASE_URL` selects PostgreSQL instead. Run `npm run migrate` on an empty working database. Do not seed real accounts with demo data. Shared demo seeding explicitly requires `--demo-database`.
 
-### Use it with your own Postgres or Supabase
+This is an additive usage and charge review desk. Supported rates are a monthly base charge, included units, a first graduated tier and an overage tier. Money is calculated with database decimals and rounded once per meter line to cents. Each account has one fixed currency, and currencies are never added together. Calendar months use UTC. Rate periods start on month boundaries and end exclusively.
 
-Copy `.env.example` to `.env`, set `DATABASE_URL`, then `npm run migrate`. Same commands, shared data, no per-seat fee.
+No payment collection, tax invoices, tax calculations, revenue recognition, prepaid wallets, production ingestion endpoint or claims of vendor feature parity are included. A snapshot is a reviewable calculation. A person approves a completed month only after source totals and terms have been checked. Work with your accountant and payment provider for the later steps.
 
-## The commands
-
-<!-- TODO(author): a table of the slash commands in .claude/commands and what each one does. -->
+## Daily and monthly work
 
 | Command | What it does |
 |---|---|
-| `/...` | ... |
+| `/accounts` | Read account owners, currencies and review dates. |
+| `/meters` | Read additive meters and their units. |
+| `/rates` | Read dated rates and their agreement references. |
+| `/usage-round` | Read active usage windows, source references and dimensions. |
+| `/monthly-charges` | Review monthly usage and calculated charges by account and currency. |
+| `/overages` | Find consumption above included allowances. |
+| `/unpriced-usage` | Find usage that has no agreed rate. |
+| `/quiet-accounts` | Find active accounts with no usage window ending in seven days. |
+| `/usage-trend` | Compare each meter with its previous recorded month. |
+| `/dimension-review` | Compare usage by the dimensions actually present in the records. |
+| `/owner-workload` | See who owns the most review findings and overdue work. |
+| `/issues` | Read open and resolved reconciliation issues. |
+| `/issues-due` | Read open issues due within seven days, including overdue work. |
+| `/attention` | Run the daily exception round. |
+| `/compliance` | Read accuracy, retention and missing-rate findings. |
+| `/import-history` | Read import counts, source file names and hashes. |
+| `/statements` | Read draft and approved statements. |
+| `/void-history` | Read corrections without losing the original usage. |
+| `/account` | Read one account before changing its records. |
+| `/audit` | Read the change history of one account. |
+| `/add` | Add an account, meter or agreed monthly rate. |
+| `/record` | Record a measured additive usage window. |
+| `/void` | Correct a usage record by preserving it and recording why it is excluded. |
+| `/issue` | Assign a reconciliation issue. |
+| `/resolve` | Record the evidence that resolves an issue. |
+| `/review` | Record an accuracy or retention review date after the review happened. |
+| `/log` | Append an operational note. |
+| `/draft-statement` | Freeze a monthly usage calculation for review. |
+| `/approve` | Record a completed review and lock that account month. |
+| `/import` | Import Amberflo additive usage exports with the actual headings mapped. |
+| `/export` | Make a complete local export including provenance and review history. |
+| `/weekly-review` | Write the Monday usage and reconciliation review. |
+| `/draft-usage-letter` | Prepare an account usage explanation for review. |
+| `/customise` | Add your fields and rules with a tested migration. |
+| `/new-view` | Add a branded read-only report. |
 
-## Instead of Amberflo
+The one CLI is `npm run usage -- <command>`, with `--json` for machines. Exact account codes are case insensitive. Unique name fragments and id prefixes work too. Ambiguous references list candidates and exit 1. [CLI examples](docs/cli.md) include every write.
 
-<!-- TODO(author): how to bring data across from Amberflo; link docs/replace-amberflo.md -->
+## Ten questions to ask
 
-## Architecture
+These combine local source records, your agreements and your review history. They are executable questions, not a claim that Amberflo cannot build similar reports.
 
-```
-usage-metering-for-claude-code/
-  CLAUDE.md                 how the operator wants this run (routing table + house rules)
-  AGENTS.md                 the same, for Codex / OpenCode / Cursor / Gemini CLI
-  .claude/commands/         the slash commands
-  scripts/                  the CLI the commands drive
-  scripts/lib/db.mjs        one adapter: DATABASE_URL (pg) or embedded PGlite
-  supabase/migrations/      plain SQL schema
-  supabase/seed.sql         demo data
-  docs/                     the thesis and the migration guide
-```
+1. Which account has consumption with no agreed rate? `unpriced-usage`
+2. Which accounts exceeded their included units? `overages`
+3. Which agreed accounts stopped reporting usage? `quiet-accounts`
+4. Which owner has the most overdue review work? `owner-workload`
+5. How did usage change against the previous recorded month? `usage-trend`
+6. Which regions or features account for the recorded consumption? `dimension-review`
+7. Which accounts need a retention purpose review? `compliance`
+8. Which records were excluded and who explained the correction? `void-history`
+9. Which source exports have already been brought across? `import-history`
+10. Which monthly calculations are approved and which are still drafts? `statements`
 
-## Built for coding agents
+## Your first hour: ten things to ask for
 
-The database, CLI and command recipes work with Claude Code, Codex, OpenCode or Cursor. Ask your coding agent for a new command and have it implement and test the change against the same records.
+1. Put our business name, colours and logo in brand.json.
+2. Add our account codes and owners without importing personal data we do not need.
+3. Map the headings in one actual Amberflo usage export.
+4. Confirm whether those rows are additive interval totals or individual events.
+5. Import a reviewed month and compare its totals to Amberflo.
+6. Enter the signed rates, included usage and month boundaries.
+7. Assign each unexplained difference to an owner and date.
+8. Draft a usage statement and compare every line with the source.
+9. Give one team a read-only account review report.
+10. Set up a shared database, restricted roles and tested backups before colleagues use it.
 
-## Contributing
+## Correctness and switching
 
-Issues and pull requests are welcome. Keep the shape: plain SQL, a small CLI, a slash command per recurring job, no front end.
+[Moving from Amberflo](docs/replace-amberflo.md) explains the one-command mapped CSV import and its boundaries. Raw source rows, batch hashes and mappings are retained. Whole imports roll back on an invalid row. A repeated file is a no-op. Stable source references prevent duplication across files. Overlapping windows for the same account, meter and dimensions are rejected, including overlaps across import sources.
 
-## Want it installed and run for you?
+A correction voids a usage record and keeps its history. Approved account months cannot accept new usage, rate cards or voids. Statements hold frozen lines and a fingerprint of their source records. A changed source invalidates a draft even when the total happens to be the same. The approval command only accepts completed calendar months with no open issues and an up-to-date account accuracy review.
 
-Enterprise DNA installs Usage Metering for Claude Code for your business, migrates your Amberflo data, connects it to the rest of your tools, and runs it for you as part of **Omni**, our managed Command Center. One setup fee, then a monthly retainer.
+Use a trusted administrator for this repository. All tables enable row security with no anonymous policies, but the database owner can alter records and triggers. The audit log is not independent certification. A shared service needs access design, monitoring, secure backups and restore drills. Do not expose the database to customers.
 
-- Book a call: [enterprisedna.co/omni/book](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=amberflo)
-- Read more: [enterprisedna.co/omni/instead-of/amberflo](https://enterprisedna.co/omni/instead-of/amberflo?utm_source=github&utm_medium=readme&utm_campaign=amberflo)
+## Documents, views and record checks
 
-## License
+`npm run docs` renders frozen usage statements and account review packs as branded HTML. `npm run view` renders the charge review and weekly exception desk. `weekly-review` and `draft-usage-letter` write private drafts. All outputs stay local. Reports are read-only and are printable, with no web server or front end.
 
-MIT. Copyright (c) 2026 Enterprise DNA.
+[Record checks](docs/compliance.md) tie accuracy and retention reviews to NZ Privacy Act principles when personal information is present. Dates are local policy choices, not statutory deadlines, and a clean check does not certify compliance. [Why no front end](docs/why-no-front-end.md) describes the capture and access boundaries.
+
+## Tests
+
+`npm test` uses a disposable database and output directory. It tests exact decimals, graduated allowances, idempotent imports, malformed CSV, overlapping windows, rollback, stale statement rejection, approved-month locks, ambiguity, history, exports and document escaping. Linux and Windows CI run the same suite. A separate CI job exercises PostgreSQL with the same migrations. Never set the disposable test connection to a working database.
+
+## Licence
+
+MIT. Copyright 2026 Enterprise DNA. This independent project is not affiliated with Amberflo.

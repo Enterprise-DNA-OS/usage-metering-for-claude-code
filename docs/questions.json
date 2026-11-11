@@ -1,0 +1,42 @@
+[
+  {
+    "question": "Which account has consumption with no agreed rate?",
+    "command": "unpriced-usage"
+  },
+  {
+    "question": "Which accounts exceeded their included units?",
+    "command": "overages"
+  },
+  {
+    "question": "Which agreed accounts stopped reporting usage?",
+    "command": "quiet-accounts"
+  },
+  {
+    "question": "Which owner has the most overdue review work?",
+    "command": "owner-workload"
+  },
+  {
+    "question": "How did usage change against the previous recorded month?",
+    "command": "usage-trend"
+  },
+  {
+    "question": "Which regions or features account for the recorded consumption?",
+    "command": "dimension-review"
+  },
+  {
+    "question": "Which accounts need a retention purpose review?",
+    "command": "compliance"
+  },
+  {
+    "question": "Which records were excluded and who explained the correction?",
+    "command": "void-history"
+  },
+  {
+    "question": "Which source exports have already been brought across?",
+    "command": "import-history"
+  },
+  {
+    "question": "Which monthly calculations are approved and which are still drafts?",
+    "command": "statements"
+  }
+]

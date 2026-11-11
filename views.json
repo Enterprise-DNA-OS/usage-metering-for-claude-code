@@ -1,13 +1,34 @@
 [
   {
+    "name": "charge-review",
+    "title": "Monthly charge review",
+    "subtitle": "Consumption and agreed rates. Amounts exclude tax.",
+    "sections": [
+      {
+        "title": "Charges by account and meter",
+        "sql": "select account,meter,month,currency,units,charge_cents from monthly_charges order by month desc,account,meter"
+      },
+      {
+        "title": "Usage without rates",
+        "sql": "select account,meter,month,units from monthly_charges where rate_id is null order by account,meter"
+      }
+    ]
+  },
+  {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Usage Metering for Claude Code: what needs attention, rendered by npm run view",
+    "title": "The usage desk this week",
     "sections": [
       {
         "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "sql": "select * from attention_board order by due_on,account"
+      },
+      {
+        "title": "Review findings",
+        "sql": "select * from compliance_findings order by account,rule"
+      },
+      {
+        "title": "Prepared statements",
+        "sql": "select account,month,currency,total_cents,status,reviewed_by from statement_register order by month desc,account"
       }
     ]
   }

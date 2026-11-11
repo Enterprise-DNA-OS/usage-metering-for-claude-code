@@ -1,0 +1,9 @@
+{
+  "account": "Customer ID",
+  "meter": "Meter",
+  "from": "Window Start",
+  "to": "Window End",
+  "quantity": "Usage",
+  "reference": "Usage Reference",
+  "dimensions": "Dimensions"
+}

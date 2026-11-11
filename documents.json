@@ -1,11 +1,44 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
-    "file": "name",
+    "name": "usage-statement",
+    "title": "Usage statement for review",
+    "for_each": "select id,month::text as label from statements",
+    "file": "label",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Statement record",
+        "layout": "record",
+        "note": "This is a usage calculation, not a tax invoice or payment request. Only a separate approval record marks review complete.",
+        "sql": "select a.name as customer,s.month,s.currency,s.total_cents,s.prepared_by,s.created_at from statements s join accounts a on a.id=s.account_id where s.id=$1"
+      },
+      {
+        "title": "Frozen charge lines",
+        "sql": "select line->>'meter' as meter,line->>'units' as units,line->>'included_units' as included_units,(line->>'charge_cents')::bigint as charge_cents,s.currency from statements s, lateral jsonb_array_elements(s.lines) line where s.id=$1"
+      },
+      {
+        "title": "Review record",
+        "sql": "select reviewed_by,evidence,created_at from approvals where statement_id=$1"
+      }
+    ]
+  },
+  {
+    "name": "account-review",
+    "title": "Account usage review",
+    "for_each": "select id,code from accounts",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Record checks",
+        "sql": "select c.* from compliance_findings c join accounts a on a.code=c.account where a.id=$1"
+      },
+      {
+        "title": "Issues and resolutions",
+        "sql": "select title,owner,due_on,status,resolution from issues where account_id=$1 order by due_on"
+      },
+      {
+        "title": "Notes",
+        "sql": "select actor,body,created_at from notes where account_id=$1 order by created_at"
+      }
     ]
   }
 ]

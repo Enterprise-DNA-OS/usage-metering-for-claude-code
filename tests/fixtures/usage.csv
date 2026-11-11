@@ -1,0 +1,2 @@
+Customer ID,Meter,Window Start,Window End,Usage,Usage Reference,Dimensions
+ACME,api_calls,2026-10-01T00:00:00Z,2026-10-02T00:00:00Z,15000,acme-20261001,{}
